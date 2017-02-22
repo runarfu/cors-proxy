@@ -20,7 +20,7 @@ method_requests_mapping = {
 @app.route('/<path:url>', methods=method_requests_mapping.keys())
 def proxy(url):
     requests_function = method_requests_mapping[flask.request.method]
-    request = requests_function(url, stream=True, data=flask.request.args)
+    request = requests_function(url, stream=True, params=flask.request.args)
     response = flask.Response(flask.stream_with_context(request.iter_content()),
                               content_type=request.headers['content-type'],
                               status=request.status_code)
