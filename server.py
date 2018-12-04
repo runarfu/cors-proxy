@@ -25,6 +25,7 @@ def proxy(url):
                               content_type=request.headers['content-type'],
                               status=request.status_code)
     response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type, accept'
     return response
 
 
