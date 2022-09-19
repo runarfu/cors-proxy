@@ -30,6 +30,22 @@ def proxy(url):
     return response
 
 
+@app.errorhandler(404)
+def help_message(e):
+    message = """
+Usage:
+
+/       Shows this help message
+/<url>  Make a request to <url>
+
+Source code : https://github.com/sehnryr/cors-proxy
+    """.strip()
+
+    response = flask.make_response(message, 400)
+    response.mimetype = "text/plain"
+    return response
+
+
 @app.errorhandler(Exception)
 def default(e):
     print(e)
