@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from http import cookies
 import flask
 import requests
-from requests.structures import CaseInsensitiveDict
 
 app = flask.Flask(__name__)
 
