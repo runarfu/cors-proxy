@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
+from http import cookies
 import flask
 import requests
+from requests.structures import CaseInsensitiveDict
 
 app = flask.Flask(__name__)
 
@@ -28,7 +30,9 @@ def proxy(url):
     )
     custom_response = flask.Response(
         flask.stream_with_context(response.iter_content()),
-        content_type=response.headers["content-type"],
+        content_type=response.headers["content-type"]
+        if "content-type" in response.headers.keys()
+        else None,
         status=response.status_code,
     )
     custom_response.headers["Access-Control-Allow-Origin"] = "*"
@@ -53,7 +57,6 @@ Source code : https://github.com/sehnryr/cors-proxy
 
 @app.errorhandler(Exception)
 def default(e):
-    print(e)
     message = "The URL scheme is neither HTTP nor HTTPS"
 
     response = flask.make_response(message, 400)
@@ -63,4 +66,4 @@ def default(e):
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    app.run(host="0.0.0.0", port=8080)
