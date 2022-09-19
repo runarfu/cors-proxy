@@ -22,10 +22,14 @@ method_requests_mapping = {
 @app.route("/<path:url>", methods=method_requests_mapping.keys())
 def proxy(url):
     requests_function = method_requests_mapping[flask.request.method]
+    params = {
+        **flask.request.args.to_dict(),
+        **flask.request.form.to_dict(),
+    }
     response = requests_function(
         url,
         stream=True,
-        params=flask.request.args,
+        data=params,
         allow_redirects=False,
     )
     custom_response = flask.Response(
