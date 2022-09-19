@@ -30,6 +30,16 @@ def proxy(url):
     return response
 
 
+@app.errorhandler(Exception)
+def default(e):
+    print(e)
+    message = "The URL scheme is neither HTTP nor HTTPS"
+
+    response = flask.make_response(message, 400)
+    response.mimetype = "text/plain"
+    return response
+
+
 if __name__ == "__main__":
     app.debug = True
     app.run()
