@@ -41,10 +41,6 @@ def proxy(url):
         custom_response.set_cookie(
             key=cookie.name,
             value=cookie.value,
-            expires=cookie.expires,
-            path=cookie.path,
-            domain=cookie.domain,
-            secure=cookie.secure,
         )
     custom_response.headers["Access-Control-Allow-Origin"] = "*"
     return custom_response
