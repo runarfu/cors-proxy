@@ -2,33 +2,40 @@
 
 
 import flask
+import flask_cors
 import requests
 
 app = flask.Flask(__name__)
 
-method_requests_mapping = {
-    "GET": requests.get,
-    "HEAD": requests.head,
-    "POST": requests.post,
-    "PUT": requests.put,
-    "DELETE": requests.delete,
-    "PATCH": requests.patch,
-    "OPTIONS": requests.options,
-}
+available_methods = [
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "OPTIONS",
+]
 
 
-@app.route("/<path:url>", methods=method_requests_mapping.keys())
+@app.route("/<path:url>", methods=available_methods)
+@flask_cors.cross_origin(
+    expose_headers="*",
+    supports_credentials=True,
+)
 def proxy(url):
-    requests_function = method_requests_mapping[flask.request.method]
+    print(flask.request.cookies)
+    session = requests.Session()
     parameters = {
         **flask.request.args.to_dict(),
         **flask.request.form.to_dict(),
     }
-    response = requests_function(
-        url,
+    response = session.request(
+        method=flask.request.method,
+        url=url,
         stream=True,
         data=parameters,
-        allow_redirects=False,
+        cookies=flask.request.cookies,
     )
     custom_response = flask.Response(
         flask.stream_with_context(response.iter_content()),
@@ -37,12 +44,12 @@ def proxy(url):
         else None,
         status=response.status_code,
     )
-    for cookie in response.cookies:
+    for cookie in session.cookies:
         custom_response.set_cookie(
             key=cookie.name,
             value=cookie.value,
+            expires=cookie.expires,
         )
-    custom_response.headers["Access-Control-Allow-Origin"] = "*"
     return custom_response
 
 
@@ -73,4 +80,4 @@ def default(e):
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(host="0.0.0.0", port=8080)
+    app.run()
